@@ -50,7 +50,7 @@ tx_code = convenc(tx_data,trel);            % convultional encoder
 tx_syms = mapping(tx_code', MOD_ORDER, 1);
 
 figure(1);
-scatter(real(tx_syms), imag(tx_syms),'filed');
+scatter(real(tx_syms), imag(tx_syms),'filled');
 title(' Signal Space of transmitted bits');
 xlabel('I'); ylabel('Q'); 
 
