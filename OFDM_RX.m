@@ -1,7 +1,7 @@
 
 %% Rx processing params
 
-FFT_OFFSET                    = 4;           % Number of CP samples to use in FFT (on average)
+rx_data= raw_rx_dec; % run OFDM tx code to get raw_rx_dec
 LTS_CORR_THRESH               = 0.8;         % Normalized threshold for LTS correlation
 
 % Repeat the following code for each packet

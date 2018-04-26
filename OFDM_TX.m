@@ -13,6 +13,8 @@ N_SC                    = 64;                                     % Number of su
 CP_LEN                  = 16;                                     % Cyclic prefix length
 N_DATA_SYMS             = N_OFDM_SYMS * length(SC_IND_DATA);      % Number of data symbols (one per data-bearing subcarrier per OFDM symbol)
 
+channel_coding = .5; % coding rate 
+trellis_end_length= 8; % bits for trellis to end 
 
 %% Preamble
 
@@ -31,21 +33,24 @@ preamble = [repmat(sts_t, 1, 30)  lts_t(33:64) lts_t lts_t];
 
 
 %% Generate a payload of random integers
-tx_data = randi(2, 1, (N_DATA_SYMS * MOD_ORDER -16)/2) - 1;
+number_of_bits= (N_DATA_SYMS * MOD_ORDER - 2*trellis_end_length)*channel_coding;
+tx_data = randi(2, 1, number_of_bits) - 1; 
 
-% FEC modulation
-tx_data = double([tx_data 0 0 0 0 0 0 0 0]);    % 8 bits padding
+% Forward Error Correction 
+tx_data = double([tx_data zeros(1,trellis_end_length) ]);    % 8 bits padding
 trel = poly2trellis(7, [171 133]);              % Define trellis
-tx_code = convenc(tx_data,trel);
+tx_code = convenc(tx_data,trel);            % convultional encoder 
+
+% bits to signal space mapping these are you are x_k from the class
 tx_syms = mapping(tx_code', MOD_ORDER, 1);
 
-% Reshape the symbol vector to a matrix with one column per OFDM symbol,
-% these are you are x_k from the class
-tx_syms_mat = reshape(tx_syms, length(SC_IND_DATA), N_OFDM_SYMS);
-
 figure(1);
-scatter(real(tx_syms_mat), imag(tx_syms_mat));
+scatter(real(tx_syms), imag(tx_syms),'filed');
 title(' Signal Space of transmitted bits');
+xlabel('I'); ylabel('Q'); 
+
+% Reshape the symbol vector to a matrix with one column per OFDM symbol,
+tx_syms_mat = reshape(tx_syms, length(SC_IND_DATA), N_OFDM_SYMS);
 
 % Define the pilot tone values as BPSK symbols
 pilots = [1 1 -1 1].';
@@ -79,7 +84,9 @@ tx_payload_vec = reshape(tx_payload_mat, 1, numel(tx_payload_mat));
 tx_vec = [preamble tx_payload_vec];
 
 
-%% Interpolate
+%% Interpolate, 
+
+%Manu: why do we need to filter? 
 
 % Define a half-band 2x interpolation filter response
 interp_filt2 = zeros(1,43);
@@ -91,10 +98,16 @@ interp_filt2 = interp_filt2./max(abs(interp_filt2));
 % Pad with zeros for transmission to deal with delay through the interpolation filter
 tx_vec_padded = [tx_vec, zeros(1, ceil(length(interp_filt2)/2))];
 tx_vec_2x = zeros(1, 2*numel(tx_vec_padded));
-tx_vec_2x(1:2:end) = tx_vec_padded;
-tx_vec_air = filter(interp_filt2, 1, tx_vec_2x);
 
-% Scale the Tx vector to +/- 1
+tx_vec_2x(1:2:end) = tx_vec_padded;
+% Manu: plot tx_vec_2x to demonstrate upsampling. 
+
+tx_vec_air = filter(interp_filt2, 1, tx_vec_2x);
+% Manu: on the previous plot, plot tx_vec_air to demonstrate post filtering. 
+
+
+% Scale the Tx vector to +/- 1, becasue ADC and DAC take samples input from
+% 1 to -1
 tx_vec_air = TX_SCALE .* tx_vec_air ./ max(abs(tx_vec_air));
 
 
@@ -112,12 +125,12 @@ SAMP_FREQ               = 40e6;        % Sampling frequency
 rx_vec_air = [tx_vec_air, zeros(1,ceil((TRIGGER_OFFSET_TOL_NS*1e-9) / (1/SAMP_FREQ)))];
 rx_vec_air = rx_vec_air + 0*complex(randn(1,length(rx_vec_air)), randn(1,length(rx_vec_air)));
 
+%Manu: please add CFO enable flag to provide CFO 
 % CFO:
 % rx_vec_air = tx_vec_air .* exp(-1i*2*pi*1e-4*[0:length(tx_vec_air)-1]);
 
 
 % Decimate
-
 raw_rx_dec = filter(interp_filt2, 1, rx_vec_air);
 raw_rx_dec = raw_rx_dec(1:2:end);
 
