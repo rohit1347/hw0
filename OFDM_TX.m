@@ -39,8 +39,13 @@ trel = poly2trellis(7, [171 133]);              % Define trellis
 tx_code = convenc(tx_data,trel);
 tx_syms = mapping(tx_code', MOD_ORDER, 1);
 
-% Reshape the symbol vector to a matrix with one column per OFDM symbol
+% Reshape the symbol vector to a matrix with one column per OFDM symbol,
+% these are you are x_k from the class
 tx_syms_mat = reshape(tx_syms, length(SC_IND_DATA), N_OFDM_SYMS);
+
+figure(1);
+scatter(real(tx_syms_mat), imag(tx_syms_mat));
+title(' Signal Space of transmitted bits');
 
 % Define the pilot tone values as BPSK symbols
 pilots = [1 1 -1 1].';
@@ -58,7 +63,7 @@ ifft_in_mat = zeros(N_SC, N_OFDM_SYMS);
 ifft_in_mat(SC_IND_DATA, :)   = tx_syms_mat;
 ifft_in_mat(SC_IND_PILOTS, :) = pilots_mat;
 
-%Perform the IFFT
+%Perform the IFFT --> frequency to time translation
 tx_payload_mat = ifft(ifft_in_mat, N_SC, 1);
 
 % Insert the cyclic prefix
