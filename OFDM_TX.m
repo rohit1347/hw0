@@ -17,6 +17,10 @@ channel_coding = .5; % coding rate
 trellis_end_length= 8; % bits for trellis to end 
 
 %% Preamble
+% Preamble is a concatenation of multiple copies of STS and LTS
+% It is used for packet detection and CFO and channel estimation
+% LTS is sufficient to be used for the above three blocks in a way similar to what is given in OFDM thesis.
+% If you want to use STS in place of LTS, read the paper mentioned in OFDM_RX.m comments.
 
 % STS
 sts_f = zeros(1,64);
@@ -33,7 +37,7 @@ preamble = [repmat(sts_t, 1, 30)  lts_t(33:64) lts_t lts_t];
 
 
 %% Generate a payload of random integers
-number_of_bits= (N_DATA_SYMS * MOD_ORDER - 2*trellis_end_length)*channel_coding;
+number_of_bits= (N_DATA_SYMS * MOD_ORDER - 2*trellis_end_length) * channel_coding;
 tx_data = randi(2, 1, number_of_bits) - 1; 
 
 % Forward Error Correction 
@@ -111,8 +115,8 @@ tx_vec_air = filter(interp_filt2, 1, tx_vec_2x);
 tx_vec_air = TX_SCALE .* tx_vec_air ./ max(abs(tx_vec_air));
 
 
-%% This part of code is only for simulating the wireless channel
-% You can directly use the receiver raw data file given to you.
+%% This part of code is for simulating the wireless channel.
+% You can later use the receiver raw data file instead to test your code.
 
 % Perfect (ie. Rx=Tx):
 % rx_vec_air = tx_vec_air;
