@@ -20,7 +20,8 @@ trellis_end_length= 8; % bits for trellis to end
 % Preamble is a concatenation of multiple copies of STS and LTS
 % It is used for packet detection and CFO and channel estimation
 % LTS is sufficient to be used for the above three blocks in a way similar to what is given in OFDM thesis.
-% If you want to use STS in place of LTS, read the paper mentioned in OFDM_RX.m comments.
+% If you want to use STS in place of LTS, read the paper below:
+% 'Robust Frequency and Timing Synchronization for OFDM' by Timothy M. Schmidl and Donald C. Cox
 
 % STS
 sts_f = zeros(1,64);
