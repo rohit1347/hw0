@@ -1,10 +1,14 @@
 
 %% Params:
 
+CFO_FLAG=0; % flag to enable CFO 
+DETECTION_OFFSET= 100; % to add packet detection error
+
 % Waveform params
 N_OFDM_SYMS             = 500;         % Number of OFDM symbols
 MOD_ORDER               =  4;          % Modulation order (2/4/16/64 = BSPK/QPSK/16-QAM/64-QAM)
 TX_SCALE                = 1.0;         % Scale for Tx waveform ([0:1])
+
 
 % OFDM params
 SC_IND_PILOTS           = [8 22 44 58];                           % Pilot subcarrier indices
@@ -126,6 +130,11 @@ plot(db(abs(fftshift(fft(tx_vec_air)))));
 % Perfect (ie. Rx=Tx):
 % rx_vec_air = tx_vec_air;
 
+% to enable CFO make CFO_FLAG=1
+if(CFO_FLAG)
+    tx_vec_air = tx_vec_air .* exp(-1i*2*pi*1e-4*[0:length(tx_vec_air)-1]);
+end
+
 % AWGN:
 
 TRIGGER_OFFSET_TOL_NS   = 3000;        % Trigger time offset toleration between Tx and Rx that can be accomodated
@@ -134,12 +143,9 @@ SAMP_FREQ               = 40e6;        % Sampling frequency
 rx_vec_air = [tx_vec_air, zeros(1,ceil((TRIGGER_OFFSET_TOL_NS*1e-9) / (1/SAMP_FREQ)))];
 rx_vec_air = rx_vec_air + 0*complex(randn(1,length(rx_vec_air)), randn(1,length(rx_vec_air)));
 
-%Manu: please add CFO enable flag to provide CFO 
-% CFO:
-% rx_vec_air = tx_vec_air .* exp(-1i*2*pi*1e-4*[0:length(tx_vec_air)-1]);
-
 
 % Decimate
 raw_rx_dec = filter(interp_filt2, 1, rx_vec_air);
-raw_rx_dec = raw_rx_dec(1:2:end);
+raw_rx_dec = [zeros(1,DETECTION_OFFSET) raw_rx_dec(1:2:end)];
+
 
