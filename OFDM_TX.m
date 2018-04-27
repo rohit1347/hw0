@@ -115,6 +115,10 @@ tx_vec_air = filter(interp_filt2, 1, tx_vec_2x);
 % 1 to -1
 tx_vec_air = TX_SCALE .* tx_vec_air ./ max(abs(tx_vec_air));
 
+figure(2);
+plot(db(abs(fftshift(fft(tx_vec_air)))));
+% in this plot, why do see four peaks?
+
 
 %% This part of code is for simulating the wireless channel.
 % You can later use the receiver raw data file instead to test your code.
