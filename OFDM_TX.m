@@ -94,8 +94,8 @@ tx_vec = [preamble tx_payload_vec];
 
 
 %% Interpolate, 
-
-%Manu: why do we need to filter? 
+% Interpolation filter basically implements the DAC before transmission
+% On the receiver's end decimation is performed to implement the ADC
 
 % Define a half-band 2x interpolation filter response
 interp_filt2 = zeros(1,43);
