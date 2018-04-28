@@ -1,14 +1,15 @@
 
+clear;
+
 %% Params:
 
-CFO_FLAG=0; % flag to enable CFO 
-DETECTION_OFFSET= 100; % to add packet detection error
+CFO_FLAG = 0; % flag to enable CFO 
+DETECTION_OFFSET = 100; % to add packet detection error
 
 % Waveform params
 N_OFDM_SYMS             = 500;         % Number of OFDM symbols
 MOD_ORDER               =  4;          % Modulation order (2/4/16/64 = BSPK/QPSK/16-QAM/64-QAM)
 TX_SCALE                = 1.0;         % Scale for Tx waveform ([0:1])
-
 
 % OFDM params
 SC_IND_PILOTS           = [8 22 44 58];                           % Pilot subcarrier indices
@@ -18,7 +19,8 @@ CP_LEN                  = 16;                                     % Cyclic prefi
 N_DATA_SYMS             = N_OFDM_SYMS * length(SC_IND_DATA);      % Number of data symbols (one per data-bearing subcarrier per OFDM symbol)
 
 channel_coding = .5; % coding rate 
-trellis_end_length= 8; % bits for trellis to end 
+trellis_end_length = 8; % bits for trellis to end 
+
 
 %% Preamble
 % Preamble is a concatenation of multiple copies of STS and LTS
@@ -56,7 +58,7 @@ tx_syms = mapping(tx_code', MOD_ORDER, 1);
 figure(1);
 scatter(real(tx_syms), imag(tx_syms),'filled');
 title(' Signal Space of transmitted bits');
-xlabel('I'); ylabel('Q'); 
+xlabel('I'); ylabel('Q');
 
 % Reshape the symbol vector to a matrix with one column per OFDM symbol,
 tx_syms_mat = reshape(tx_syms, length(SC_IND_DATA), N_OFDM_SYMS);
@@ -114,13 +116,22 @@ tx_vec_2x(1:2:end) = tx_vec_padded;
 tx_vec_air = filter(interp_filt2, 1, tx_vec_2x);
 % Manu: on the previous plot, plot tx_vec_air to demonstrate post filtering. 
 
+figure(2);
+plot(abs(tx_vec_2x));
+hold on;
+plot(abs(tx_vec_air(22:end)));
+xlim([20,50]);
+title('Interpolation visualized');
+xlabel('time'); ylabel('amplitude');
+legend('y = pre filtering','y = post filtering')
 
 % Scale the Tx vector to +/- 1, becasue ADC and DAC take samples input from
 % 1 to -1
 tx_vec_air = TX_SCALE .* tx_vec_air ./ max(abs(tx_vec_air));
 
-figure(2);
+figure(3);
 plot(db(abs(fftshift(fft(tx_vec_air)))));
+xlim([20000,60000]); ylim([0,65]);
 % in this plot, why do see four peaks?
 
 
