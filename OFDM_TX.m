@@ -109,12 +109,8 @@ interp_filt2 = interp_filt2./max(abs(interp_filt2));
 % Pad with zeros for transmission to deal with delay through the interpolation filter
 tx_vec_padded = [tx_vec, zeros(1, ceil(length(interp_filt2)/2))];
 tx_vec_2x = zeros(1, 2*numel(tx_vec_padded));
-
 tx_vec_2x(1:2:end) = tx_vec_padded;
-% Manu: plot tx_vec_2x to demonstrate upsampling. 
-
 tx_vec_air = filter(interp_filt2, 1, tx_vec_2x);
-% Manu: on the previous plot, plot tx_vec_air to demonstrate post filtering. 
 
 figure(2);
 plot(abs(tx_vec_2x));
