@@ -1,6 +1,6 @@
 function [map_out]=mapping(data,mode,scale)
 
-% mode : Modulation order (2/4/16/64 = BSPK/QPSK/16-QAM/64-QAM)
+% mode : Modulation order in power of 2 (1/2/4/6 = BSPK/QPSK/16-QAM/64-QAM)
 % scale : scaling up or down the modulation, default value = 1
 
 input_seq = data;

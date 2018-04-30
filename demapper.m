@@ -1,7 +1,7 @@
 function [map_out]=demapper(data,mode,c)
 
 m_out=data;
-% mode : Modulation order (2/4/16/64 = BSPK/QPSK/16-QAM/64-QAM)
+% mode : Modulation order in power of 2 (1/2/4/6 = BSPK/QPSK/16-QAM/64-QAM)
 % c = 1;
 
 switch mode
