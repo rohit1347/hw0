@@ -60,8 +60,13 @@ LTS_CORR_THRESH = 0.8;         % Normalized threshold for LTS correlation
 
 %% Demodulation
 
+figure(4);
+scatter(real(rx_syms), imag(rx_syms),'filled');
+title(' Signal Space of received bits');
+xlabel('I'); ylabel('Q');
+
 % FEC decoder
-Demap_out = demapper(rx_syms,mod_type,1);
+Demap_out = demapper(rx_syms,MOD_ORDER,1);
 
 % viterbi decoder
 rx_data_final = vitdec(Demap_out,trel,7,'trunc','hard');
