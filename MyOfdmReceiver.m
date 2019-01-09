@@ -105,9 +105,7 @@ xlabel('I'); ylabel('Q');
 Demap_out = demapper(rx_syms,MOD_ORDER,1);
 
 % viterbi decoder
-rx_data_final = vitdec(Demap_out,trel,7,'trunc','hard');
+decoded_data = vitdec(Demap_out,trel,7,'trunc','hard');
 
-% rx_data is the final output corresponding to tx_data, which can be used
+% decoded_data is the final output corresponding to tx_data, which can be used
 % to calculate BER
-
-[number,ber] = biterr(tx_data,rx_data_final);

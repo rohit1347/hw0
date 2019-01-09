@@ -70,6 +70,7 @@ pilots = [1 1 -1 1].';
 pilots_mat = repmat(pilots, 1, N_OFDM_SYMS);
 
 
+
 %% IFFT
 
 % Construct the IFFT input matrix
@@ -153,6 +154,6 @@ rx_vec_air = rx_vec_air + 0*complex(randn(1,length(rx_vec_air)), randn(1,length(
 
 % Decimate
 raw_rx_dec = filter(interp_filt2, 1, rx_vec_air);
-raw_rx_dec = [zeros(1,DETECTION_OFFSET) raw_rx_dec(1:2:end)];
+raw_rx_data = [zeros(1,DETECTION_OFFSET) raw_rx_dec(1:2:end)];
 
 
