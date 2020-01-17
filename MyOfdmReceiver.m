@@ -1,5 +1,5 @@
 
- function [decoded_data]= MyOfdmReceiver(data);
+ function [tx_data,decoded_data]= MyOfdmReceiver(data);
 
  
  %% run transmitter code to load sts and lts and other parameters 
@@ -9,6 +9,7 @@
 
 rx_data = raw_rx_data;          % run OFDM tx code to get raw_rx_dec
 STS_CORR_THRESH =1/MOD_ORDER;         % Normalized threshold for LTS correlation
+LTS_CORR_THRESH =2/MOD_ORDER;         % Normalized threshold for LTS correlation
 % Usage: Find all peaks whose magnitude is greater than 0.8 times
 % the maximum magnitude after cross correlation (Packet Detection)
 
@@ -22,16 +23,37 @@ length_samples= length(rx_data);
 sample=16;
 
 sts_corr=xcorr(rx_data,sts_t);
+lts_corr=xcorr(rx_data,lts_t);
+rx_data_acorr=xcorr(rx_data,rx_data);
 sts_corr=sts_corr(length_samples:end);
 sts_corr=sts_corr/max(sts_corr);
+lts_corr=lts_corr(length_samples:end);
+lts_corr=lts_corr/max(lts_corr);
 sts_max_corr=find(abs(sts_corr)>STS_CORR_THRESH);
 sts_start=sts_max_corr(1);
+lts_max_corr=find(abs(lts_corr)>LTS_CORR_THRESH);
+lts_start=lts_max_corr(1);
 f_data=rx_data(sts_start:end);
 figure(4)
 plot(abs(f_data))
 title('Data after Packet Detection')
 xlabel('Symbol Index')
 
+%%
+figure(7)
+subplot(2,1,1)
+plot(abs(sts_corr))
+title('STS Correlation in Presence of CFO')
+xlabel('Symbol Index')
+xlim([1 1000])
+yline(STS_CORR_THRESH,'--k','label','Correlation threshold','LabelHorizontalAlignment','left')
+subplot(2,1,2)
+plot(abs(lts_corr))
+title('LTS Correlation in Presence of CFO')
+xlabel('Symbol Index')
+xlim([1 1000])
+yline(STS_CORR_THRESH,'--k','label','Correlation threshold','LabelHorizontalAlignment','left')
+%%
 % 
 % while(sample< length_samples)
 % 	% sts correlation

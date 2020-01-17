@@ -4,7 +4,7 @@ clear
 %% test simulation 
 OFDM_TX; % run base transmitter which you can use for developing. 
 
-[decoded_data]= MyOfdmReceiver(raw_rx_data);
+[decoded_data,tx_data]= MyOfdmReceiver(raw_rx_data);
  
 % rx_data is the final output corresponding to tx_data, which can be used
 % to calculate BER
