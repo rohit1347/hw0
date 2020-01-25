@@ -8,7 +8,7 @@ DETECTION_OFFSET = 100; % to add packet detection error
 
 % Waveform params
 N_OFDM_SYMS             = 500;         % Number of OFDM symbols
-MOD_ORDER               =  6;          % Modulation order in power of 2 (1/2/4/6 = BSPK/QPSK/16-QAM/64-QAM)
+MOD_ORDER               =  2;          % Modulation order in power of 2 (1/2/4/6 = BSPK/QPSK/16-QAM/64-QAM)
 TX_SCALE                = 1.0;         % Scale for Tx waveform ([0:1])
 
 % OFDM params
